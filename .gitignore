@@ -1,0 +1,4 @@
+Gemfile.lock
+mozjpeg/
+*.deb
+*.tar.gz
