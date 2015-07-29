@@ -55,6 +55,7 @@ package:
 			--depends "libc6 >= 2.19" \
 			--deb-shlibs "mozjpeg 8 libjpeg (= $(VERSION))" \
 			--deb-compression xz \
+			--deb-no-default-config-files \
 			usr/local/lib
 	fpm -s dir \
 			-t deb \
@@ -70,4 +71,5 @@ package:
 			--package "mozjpeg-dev-$(VERSION)_$(ARCH).deb" \
 			--depends "mozjpeg = $(VERSION)" \
 			--deb-compression xz \
+			--deb-no-default-config-files \
 			usr/local/include
