@@ -1,4 +1,4 @@
-VERSION=3.0
+VERSION=3.1
 TEMP=/tmp/mozjpeg
 ARCH=$(shell dpkg --print-architecture)
 
@@ -33,14 +33,13 @@ compile:
 	cd mozjpeg && autoreconf -fiv
 	cd mozjpeg && ./configure \
 		--prefix=/usr/local \
-		--disable-static \
 		--with-jpeg8 \
 		--without-turbojpeg
 	cd mozjpeg && $(MAKE) install DESTDIR=$(TEMP)
 
 package:
 	bundle install
-	fpm -s dir \
+	bundle exec fpm -s dir \
 			-t deb \
 			-C $(TEMP) \
 			--force \
@@ -57,7 +56,7 @@ package:
 			--deb-compression xz \
 			--deb-no-default-config-files \
 			usr/local/lib
-	fpm -s dir \
+	bundle exec fpm -s dir \
 			-t deb \
 			-C $(TEMP) \
 			--force \
