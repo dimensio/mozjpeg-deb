@@ -52,7 +52,7 @@ package:
 			--description "$(DESC)" \
 			--package "mozjpeg-$(VERSION)_$(ARCH).deb" \
 			--depends "libc6 >= 2.19" \
-			--deb-shlibs "mozjpeg 8 libjpeg (= $(VERSION))" \
+			--deb-shlibs "libjpeg 8 mozjpeg (= $(VERSION))" \
 			--deb-compression xz \
 			--deb-no-default-config-files \
 			usr/local/lib
