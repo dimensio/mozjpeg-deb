@@ -1,4 +1,4 @@
-VERSION=3.1
+VERSION?=3.1
 TEMP=/tmp/mozjpeg
 ARCH=$(shell dpkg --print-architecture)
 
