@@ -1,4 +1,5 @@
-VERSION=3.0
+VERSION?=3.1
+VERSION_ALTERNATE?=-1~fasterize
 TEMP=/tmp/mozjpeg
 ARCH=$(shell dpkg --print-architecture)
 
@@ -16,7 +17,7 @@ git: clean prepare fetch-git compile package
 
 clean:
 	rm -f *.deb
-	rm -rf mozjpeg/
+	rm -rf mozjpeg-${VERSION}/
 	rm -rf $(TEMP)
 
 prepare:
@@ -26,50 +27,49 @@ fetch-git:
 	git clone https://github.com/mozilla/mozjpeg.git
 
 fetch-release:
-	curl -L -O -z mozjpeg-${VERSION}-release-source.tar.gz https://github.com/mozilla/mozjpeg/releases/download/v${VERSION}/mozjpeg-${VERSION}-release-source.tar.gz
+	curl -L -z mozjpeg-${VERSION}-release-source.tar.gz -o mozjpeg-${VERSION}-release-source.tar.gz https://github.com/mozilla/mozjpeg/archive/v${VERSION}.tar.gz
 	tar zxf mozjpeg-${VERSION}-release-source.tar.gz
 
 compile:
-	cd mozjpeg && autoreconf -fiv
-	cd mozjpeg && ./configure \
+	cd mozjpeg-${VERSION} && autoreconf -fiv
+	cd mozjpeg-${VERSION} && ./configure \
 		--prefix=/usr/local \
-		--disable-static \
 		--with-jpeg8 \
 		--without-turbojpeg
-	cd mozjpeg && $(MAKE) install DESTDIR=$(TEMP)
+	cd mozjpeg-${VERSION} && $(MAKE) install DESTDIR=$(TEMP)
 
 package:
 	bundle install
-	fpm -s dir \
+	bundle exec fpm -s dir \
 			-t deb \
 			-C $(TEMP) \
 			--force \
 			--name mozjpeg \
-			--version $(VERSION) \
+			--version $(VERSION)$(VERSION_ALTERNATE) \
 			--vendor "$(VENDOR)" \
 			--maintainer "$(VENDOR)" \
 			--license "$(LICENSE)" \
 			--url "$(URL)" \
 			--description "$(DESC)" \
-			--package "mozjpeg-$(VERSION)_$(ARCH).deb" \
+			--package "mozjpeg-$(VERSION)$(VERSION_ALTERNATE)_$(ARCH).deb" \
 			--depends "libc6 >= 2.19" \
-			--deb-shlibs "mozjpeg 8 libjpeg (= $(VERSION))" \
+			--deb-shlibs "libjpeg 8 mozjpeg (= $(VERSION)$(VERSION_ALTERNATE))" \
 			--deb-compression xz \
 			--deb-no-default-config-files \
 			usr/local/lib
-	fpm -s dir \
+	bundle exec fpm -s dir \
 			-t deb \
 			-C $(TEMP) \
 			--force \
 			--name mozjpeg-dev \
-			--version $(VERSION) \
+			--version $(VERSION)$(VERSION_ALTERNATE) \
 			--vendor "$(VENDOR)" \
 			--maintainer "$(VENDOR)" \
 			--license "$(LICENSE)" \
 			--url "$(URL)" \
 			--description "$(DESC)" \
-			--package "mozjpeg-dev-$(VERSION)_$(ARCH).deb" \
-			--depends "mozjpeg = $(VERSION)" \
+			--package "mozjpeg-dev-$(VERSION)$(VERSION_ALTERNATE)_$(ARCH).deb" \
+			--depends "mozjpeg = $(VERSION)$(VERSION_ALTERNATE)" \
 			--deb-compression xz \
 			--deb-no-default-config-files \
 			usr/local/include
